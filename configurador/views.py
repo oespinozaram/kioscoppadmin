@@ -9,7 +9,7 @@ from .models import (
     CategoriaTiposFormaDisponibles,
     CategoriaTiposPanDisponibles,
     CategoriaTiposRellenoDisponibles,
-    CategoriaTiposTamanoDisponibles, CategoriaTiposCoberturaColores)
+    CategoriaTiposCoberturaColores)
 from .serializers import (
     CategoriaSerializer,
     TipoPanSerializer,
@@ -23,7 +23,6 @@ from .serializers import (
     CategoriaTiposFormaDisponiblesSerializer,
     CategoriaTiposPanDisponiblesSerializer,
     CategoriaTiposRellenoDisponiblesSerializer,
-    CategoriaTiposTamanoDisponiblesSerializer,
     CategoriaTiposCoberturaColoresSerializer,
     CategoriaSyncSerializer, PastelConfiguradoSyncSerializer
 )
@@ -110,13 +109,6 @@ class CategoriaTiposRellenoDisponiblesViewSet(viewsets.ModelViewSet):
     """
     queryset = CategoriaTiposRellenoDisponibles.objects.all()
     serializer_class = CategoriaTiposRellenoDisponiblesSerializer
-
-class CategoriaTiposTamanoDisponiblesViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint para los tamaños disponibles por categoría.
-    """
-    queryset = CategoriaTiposTamanoDisponibles.objects.all()
-    serializer_class = CategoriaTiposTamanoDisponiblesSerializer
 
 
 class SyncView(APIView):

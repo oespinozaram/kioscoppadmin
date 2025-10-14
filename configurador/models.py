@@ -178,17 +178,6 @@ class CategoriaTiposRellenoDisponibles(models.Model):
         verbose_name_plural = 'Rellenos Disponibles por Categoría'
 
 
-class CategoriaTiposTamanoDisponibles(models.Model):
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, db_column='id_categoria')
-    tipo_tamano = models.ForeignKey(TipoTamano, on_delete=models.CASCADE, db_column='id_tipo_tamano')
-
-    class Meta:
-        db_table = 'categoria_tipos_tamano_disponibles'
-        unique_together = ('categoria', 'tipo_tamano')
-        verbose_name = 'Tamaño Disponible por Categoría'
-        verbose_name_plural = 'Tamaños Disponibles por Categoría'
-
-
 class CategoriaTiposCoberturaColores(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, db_column='id_categoria')
     tipo_cobertura = models.ForeignKey(TipoCobertura, on_delete=models.CASCADE, db_column='id_tipo_cobertura')

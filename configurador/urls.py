@@ -13,7 +13,6 @@ from .views import (
     CategoriaTiposFormaDisponiblesViewSet,
     CategoriaTiposPanDisponiblesViewSet,
     CategoriaTiposRellenoDisponiblesViewSet,
-    CategoriaTiposTamanoDisponiblesViewSet,
     SyncView
 )
 
@@ -45,11 +44,6 @@ router.register(
     r'rellenos-disponibles',
     CategoriaTiposRellenoDisponiblesViewSet,
     basename='rellenos-disponibles'
-)
-router.register(
-    r'tamanos-disponibles',
-    CategoriaTiposTamanoDisponiblesViewSet,
-    basename='tamanos-disponibles'
 )
 
 urlpatterns = [

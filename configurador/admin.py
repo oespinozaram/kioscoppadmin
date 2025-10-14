@@ -12,7 +12,6 @@ from .models import (
     CategoriaTiposFormaDisponibles,
     CategoriaTiposPanDisponibles,
     CategoriaTiposRellenoDisponibles,
-    CategoriaTiposTamanoDisponibles,
     CategoriaTiposCoberturaColores,
     DiasFestivos,
     HorarioEntrega,
@@ -90,8 +89,6 @@ class PastelConfiguradoAdmin(admin.ModelAdmin):
 class CategoriaTiposFormaDisponiblesAdmin(admin.ModelAdmin):
     list_display = ('categoria', 'tipo_forma')
 
-
-admin.site.register(CategoriaTiposTamanoDisponibles)
 
 @admin.register(CategoriaTiposRellenoDisponibles)
 class CategoriaRellenoDisponiblesAdmin(admin.ModelAdmin):

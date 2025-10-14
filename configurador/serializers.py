@@ -13,7 +13,6 @@ from .models import (
     CategoriaTiposFormaDisponibles,
     CategoriaTiposPanDisponibles,
     CategoriaTiposRellenoDisponibles,
-    CategoriaTiposTamanoDisponibles,
     CategoriaTiposCoberturaColores
 )
 
@@ -104,10 +103,6 @@ class CategoriaTiposRellenoDisponiblesSerializer(serializers.ModelSerializer):
         model = CategoriaTiposRellenoDisponibles
         fields = '__all__'
 
-class CategoriaTiposTamanoDisponiblesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CategoriaTiposTamanoDisponibles
-        fields = '__all__'
 
 class CategoriaTiposCoberturaColoresSerializer(serializers.ModelSerializer):
     class Meta:
@@ -140,11 +135,6 @@ class TiposFormaDisponiblesSerializer(serializers.ModelSerializer):
         fields = ['tipo_forma', 'imagen_quisco']
 
 
-class TiposTamanoDisponiblesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CategoriaTiposTamanoDisponibles
-        fields = ['tipo_tamano']
-
 
 class ColoresCoberturaDisponiblesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -168,9 +158,6 @@ class CategoriaSyncSerializer(serializers.ModelSerializer):
     tipos_forma_disponibles = TiposFormaDisponiblesSerializer(
         source='categoriatiposformadisponibles_set', many=True
     )
-    tipos_tamano_disponibles = TiposTamanoDisponiblesSerializer(
-        source='categoriatipostamanodisponibles_set', many=True
-    )
     colores_cobertura_disponibles = ColoresCoberturaDisponiblesSerializer(
         source='categoriatiposcoberturacolores_set', many=True
     )
@@ -180,7 +167,7 @@ class CategoriaSyncSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'nombre_categoria', 'descripcion_pan_base', 'imagen_quiosco',
             'tipos_pan_disponibles', 'tipos_relleno_disponibles', 'tipos_cobertura_disponibles',
-            'tipos_forma_disponibles', 'tipos_tamano_disponibles', 'colores_cobertura_disponibles'
+            'tipos_forma_disponibles', 'colores_cobertura_disponibles'
         ]
 
     def create(self, validated_data):
@@ -188,7 +175,6 @@ class CategoriaSyncSerializer(serializers.ModelSerializer):
         tipos_relleno_data = validated_data.pop('tipos_relleno_disponibles')
         tipos_cobertura_data = validated_data.pop('tipos_cobertura_disponibles')
         tipos_forma_data = validated_data.pop('tipos_forma_disponibles')
-        tipos_tamano_data = validated_data.pop('tipos_tamano_disponibles')
         colores_cobertura_data = validated_data.pop('colores_cobertura_disponibles')
 
         categoria, created = Categoria.objects.update_or_create(
@@ -201,7 +187,6 @@ class CategoriaSyncSerializer(serializers.ModelSerializer):
         CategoriaTiposRellenoDisponibles.objects.filter(categoria=categoria).delete()
         CategoriaTiposCoberturaDisponibles.objects.filter(categoria=categoria).delete()
         CategoriaTiposFormaDisponibles.objects.filter(categoria=categoria).delete()
-        CategoriaTiposTamanoDisponibles.objects.filter(categoria=categoria).delete()
         CategoriaTiposCoberturaColores.objects.filter(categoria=categoria).delete()
 
         # Recrear relaciones
@@ -213,8 +198,6 @@ class CategoriaSyncSerializer(serializers.ModelSerializer):
             CategoriaTiposCoberturaDisponibles.objects.create(categoria=categoria, **item_data)
         for item_data in tipos_forma_data:
             CategoriaTiposFormaDisponibles.objects.create(categoria=categoria, **item_data)
-        for item_data in tipos_tamano_data:
-            CategoriaTiposTamanoDisponibles.objects.create(categoria=categoria, **item_data)
         for item_data in colores_cobertura_data:
             CategoriaTiposCoberturaColores.objects.create(categoria=categoria, **item_data)
 
