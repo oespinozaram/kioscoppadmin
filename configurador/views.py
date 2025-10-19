@@ -1,5 +1,7 @@
 from rest_framework import viewsets, permissions
-from rest_framework.views import APIView
+import tempfile
+import os
+import sqlite3
 from rest_framework import status
 from rest_framework.response import Response
 from django.db import transaction
@@ -27,6 +29,9 @@ from .serializers import (
     CategoriaSyncSerializer, PastelConfiguradoSyncSerializer
 )
 from dateutil.parser import parse, ParserError
+from django.http import HttpResponse
+from rest_framework.views import APIView
+
 
 DEFAULT_PERMISSION_CLASSES = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -169,3 +174,99 @@ class SyncView(APIView):
             {"message": "Sincronización completada exitosamente"},
             status=status.HTTP_200_OK
         )
+
+
+class DownloadDbView(APIView):
+    """
+    Este endpoint genera una base de datos SQLite al momento con los datos
+    del catálogo y la sirve como un archivo para descargar.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # Usamos un archivo temporal para construir la base de datos
+        with tempfile.NamedTemporaryFile(suffix=".sqlite", delete=False) as tmp_db:
+            db_path = tmp_db.name
+
+        try:
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+
+            # --- 1. Crear las tablas ---
+            # Aquí replicamos la estructura de los modelos de Django.
+            # Nota: Los tipos de datos deben ser compatibles con SQLite (TEXT, INTEGER, REAL, BLOB, NULL).
+
+            # Ejemplo para la tabla Categoria
+            cursor.execute('''
+                           CREATE TABLE categoria
+                           (
+                               id                   INTEGER PRIMARY KEY,
+                               nombre_categoria     TEXT,
+                               descripcion_pan_base TEXT,
+                               imagen_quiosco       TEXT,
+                               fecha_modificacion   TEXT
+                           )
+                           ''')
+
+            # Ejemplo para la tabla PastelConfigurado
+            cursor.execute('''
+                           CREATE TABLE pastel_configurado
+                           (
+                               id                          INTEGER PRIMARY KEY,
+                               categoria_id                INTEGER,
+                               tipo_pan_seleccionado_id    INTEGER,
+                               tipo_forma_seleccionada_id  INTEGER,
+                               tipo_tamano_seleccionado_id INTEGER,
+                               precio_base                 REAL,
+                               precio_chocolate            REAL,
+                               monto_deposito              REAL,
+                               incluye                     TEXT,
+                               peso_pastel                 TEXT,
+                               medidas_pastel              TEXT,
+                               fecha_modificacion          TEXT
+                           )
+                           ''')
+
+            # --- AGREGAR AQUÍ los CREATE TABLE para el resto de tus modelos (TipoPan, TipoForma, etc.) ---
+
+            # --- 2. Extraer y poblar los datos ---
+
+            # Poblando la tabla Categoria
+            categorias = Categoria.objects.all()
+            for cat in categorias:
+                cursor.execute(
+                    "INSERT INTO categoria (id, nombre_categoria, descripcion_pan_base, imagen_quiosco, fecha_modificacion) VALUES (?, ?, ?, ?, ?)",
+                    (cat.id, cat.nombre_categoria, cat.descripcion_pan_base, str(cat.imagen_quiosco),
+                     str(cat.fecha_modificacion))
+                )
+
+            # Poblando la tabla PastelConfigurado
+            pasteles = PastelConfigurado.objects.all()
+            for p in pasteles:
+                cursor.execute(
+                    """INSERT INTO pastel_configurado (id, categoria_id, tipo_pan_seleccionado_id,
+                                                       tipo_forma_seleccionada_id, tipo_tamano_seleccionado_id,
+                                                       precio_base, precio_chocolate, monto_deposito, incluye,
+                                                       peso_pastel, medidas_pastel, fecha_modificacion)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (p.id, p.categoria_id, p.tipo_pan_seleccionado_id, p.tipo_forma_seleccionada_id,
+                     p.tipo_tamano_seleccionado_id, p.precio_base, p.precio_chocolate,
+                     p.monto_deposito, p.incluye, p.peso_pastel, p.medidas_pastel, str(p.fecha_modificacion))
+                )
+
+            # --- AGREGAR AQUÍ la lógica para poblar el resto de tus tablas ---
+
+            conn.commit()
+            conn.close()
+
+            # --- 3. Servir el archivo para descarga ---
+            with open(db_path, 'rb') as db_file:
+                response = HttpResponse(db_file.read(), content_type='application/x-sqlite3')
+                response['Content-Disposition'] = 'attachment; filename="kiosco_data.sqlite3"'
+                return response
+
+        finally:
+            # Asegurarse de que el archivo temporal se elimine después de servirlo
+            if os.path.exists(db_path):
+                os.remove(db_path)
+

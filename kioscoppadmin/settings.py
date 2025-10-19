@@ -17,8 +17,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'configurador.apps.ConfiguradorConfig',
     'kiosco.apps.KioscoConfig',
+    'rest_framework',
+    'rest_framework_simplejwt',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    'data_wizard',
+    'data_wizard.sources',
 ]
 
 MIDDLEWARE = [
@@ -117,11 +121,13 @@ REST_FRAMEWORK = {
         'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
         'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
     ),
-
     'DEFAULT_PARSER_CLASSES': (
         'djangorestframework_camel_case.parser.CamelCaseFormParser',
         'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
         'djangorestframework_camel_case.parser.CamelCaseJSONParser',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
 

@@ -7,12 +7,14 @@ from .models import (
     TipoCobertura,
     PastelConfigurado,
     TipoTamano,
+    TiposDecoracion,
     TipoColores,
     CategoriaTiposCoberturaDisponibles,
     CategoriaTiposFormaDisponibles,
     CategoriaTiposPanDisponibles,
     CategoriaTiposRellenoDisponibles,
     CategoriaTiposCoberturaColores,
+    CategoriaTiposCoberturaDecorados,
     DiasFestivos,
     HorarioEntrega,
     Extra
@@ -25,20 +27,24 @@ admin.site.index_title = "KioscoPP Administration"
 
 admin.site.unregister(Group)
 
+
 @admin.register(TipoPan)
 class TipoPanAdmin(admin.ModelAdmin):
     list_display = ('nombre_tipo_pan',)
     search_fields = ('nombre_tipo_pan',)
+
 
 @admin.register(TipoRelleno)
 class TipoRellenoAdmin(admin.ModelAdmin):
     list_display = ('nombre_tipo_relleno',)
     search_fields = ('nombre_tipo_relleno',)
 
+
 @admin.register(TipoForma)
 class TipoFormaAdmin(admin.ModelAdmin):
     list_display = ('nombre_tipo_forma', 'detalle_forma')
     search_fields = ('nombre_tipo_forma',)
+
 
 @admin.register(TipoCobertura)
 class TipoCoberturaAdmin(admin.ModelAdmin):
@@ -51,6 +57,11 @@ class TipoTamanoAdmin(admin.ModelAdmin):
     list_display = ('nombre_tamano', 'descripcion')
     search_fields = ('nombre_tamano', 'descripcion')
 
+
+@admin.register(TiposDecoracion)
+class TiposDecoracionAdmin(admin.ModelAdmin):
+    list_display = ('nombre_tipo_decoracion',)
+    search_fields = ('nombre_tipo_decoracion',)
 
 @admin.register(TipoColores)
 class TipoColoresAdmin(admin.ModelAdmin):
@@ -107,6 +118,11 @@ class CategoriaPanDisponiblesAdmin(admin.ModelAdmin):
 @admin.register(CategoriaTiposCoberturaColores)
 class CategoriaTiposCoberturaColoresAdmin(admin.ModelAdmin):
     list_display = ('categoria', 'tipo_cobertura', 'tipo_color')
+
+
+@admin.register(CategoriaTiposCoberturaDecorados)
+class CategoriaTiposCoberturaDecoradosAdmin(admin.ModelAdmin):
+    list_display = ('categoria', 'tipo_cobertura', 'tipo_decorado')
 
 admin.site.register(DiasFestivos)
 admin.site.register(HorarioEntrega)

@@ -60,6 +60,17 @@ class TipoCobertura(models.Model):
         verbose_name_plural = "Tipos de Cobertura"
 
 
+class TiposDecoracion(models.Model):
+    nombre_tipo_decoracion = models.CharField(max_length=150, unique=True, verbose_name="Nombre del Tipo de Decoración")
+
+    def __str__(self):
+        return self.nombre_tipo_decoracion
+
+    class Meta:
+        verbose_name = "Tipo de Decorado"
+        verbose_name_plural = "Tipos de Decorados"
+
+
 class TipoColores(models.Model):
     nombre_tipo_color = models.CharField(max_length=100, unique=True, verbose_name="Nombre del Tipo de Colores")
 
@@ -146,6 +157,9 @@ class CategoriaTiposFormaDisponibles(models.Model):
     tipo_forma = models.ForeignKey(TipoForma, on_delete=models.CASCADE, db_column='id_tipo_forma')
     imagen_quisco = models.ImageField(upload_to="formas/", blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.categoria} - {self.tipo_forma}"
+
     class Meta:
         db_table = 'categoria_tipos_forma_disponibles'
         unique_together = ('categoria', 'tipo_forma')
@@ -157,6 +171,9 @@ class CategoriaTiposPanDisponibles(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, db_column='id_categoria', related_name='tipos_pan_disponibles')
     tipo_pan = models.ForeignKey(TipoPan, on_delete=models.CASCADE, db_column='id_tipo_pan')
     imagen_quisco = models.ImageField(upload_to="panes/", blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.categoria} - {self.tipo_pan}"
 
     class Meta:
         db_table = 'categoria_tipos_pan_disponibles'
@@ -171,6 +188,9 @@ class CategoriaTiposRellenoDisponibles(models.Model):
     tipo_relleno = models.ForeignKey(TipoRelleno, on_delete=models.CASCADE, db_column='id_tipo_relleno')
     imagen_quisco = models.ImageField(upload_to="rellenos/", blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.categoria} - {self.tipo_pan} - {self.tipo_relleno}"
+
     class Meta:
         db_table = 'categoria_tipos_relleno_disponibles'
         unique_together = ('categoria', 'tipo_pan', 'tipo_relleno')
@@ -183,11 +203,29 @@ class CategoriaTiposCoberturaColores(models.Model):
     tipo_cobertura = models.ForeignKey(TipoCobertura, on_delete=models.CASCADE, db_column='id_tipo_cobertura')
     tipo_color = models.ForeignKey(TipoColores, on_delete=models.CASCADE, db_column='id_tipo_color')
 
+    def __str__(self):
+        return f"{self.categoria} - {self.tipo_cobertura} - {self.tipo_color}"
+
     class Meta:
         db_table = 'categoria_tipos_cobertura_colores'
         unique_together = ('categoria', 'tipo_cobertura', 'tipo_color')
         verbose_name = "Color Disponible por Cubierta"
         verbose_name_plural = "Colores Disponibles por Cubierta"
+
+
+class CategoriaTiposCoberturaDecorados(models.Model):
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, db_column='id_categoria')
+    tipo_cobertura = models.ForeignKey(TipoCobertura, on_delete=models.CASCADE, db_column='id_tipo_cobertura')
+    tipo_decorado = models.ForeignKey(TiposDecoracion, on_delete=models.CASCADE, db_column='id_tipo_decorado')
+
+    def __str__(self):
+        return f"{self.categoria} - {self.tipo_cobertura} - {self.tipo_decorado}"
+
+    class Meta:
+        db_table = 'categoria_tipos_cobertura_decorados'
+        unique_together = ('categoria', 'tipo_cobertura', 'tipo_decorado')
+        verbose_name = 'Decorado Disponible por Cubierta'
+        verbose_name_plural = 'Decorados Disponibles por Cubierta'
 
 
 class DiasFestivos(models.Model):

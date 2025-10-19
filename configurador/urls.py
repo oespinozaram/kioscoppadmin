@@ -13,7 +13,8 @@ from .views import (
     CategoriaTiposFormaDisponiblesViewSet,
     CategoriaTiposPanDisponiblesViewSet,
     CategoriaTiposRellenoDisponiblesViewSet,
-    SyncView
+    SyncView,
+    DownloadDbView
 )
 
 router = DefaultRouter()
@@ -47,6 +48,7 @@ router.register(
 )
 
 urlpatterns = [
-    path('', include(router.urls)),
-    #path('sync', SyncView.as_view(), name='sync'),
+    #path('', include(router.urls)),
+    path('sync/', SyncView.as_view(), name='sync'),
+    path('database/download/', DownloadDbView.as_view(), name='download-db'),
 ]
